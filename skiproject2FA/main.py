@@ -1,13 +1,15 @@
-from fastapi import FastAPI, Request, Form, Query
+from pathlib import Path
+
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from data import products
 
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
 
 # Sessions (replacement for Flask session)
 app.add_middleware(
@@ -16,8 +18,8 @@ app.add_middleware(
 )
 
 # Static & templates
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # Fake DB
 users = {}
@@ -59,9 +61,9 @@ def catalog(request: Request, category: str):
     sort = request.query_params.get("sort", "default")
     min_price = request.query_params.get("min_price", "")
     max_price = request.query_params.get("max_price", "")
-    brands = [b.lower() for b in request.query_params.getall("brand")]
-    levels = [l.lower() for l in request.query_params.getall("level")]
-    styles = [s.lower() for s in request.query_params.getall("style")]
+    brands = [b.lower() for b in request.query_params.getlist("brand")]
+    levels = [l.lower() for l in request.query_params.getlist("level")]
+    styles = [s.lower() for s in request.query_params.getlist("style")]
 
     # --- Filter by category ---
     if category == "sales":
@@ -131,6 +133,16 @@ def catalog(request: Request, category: str):
             }
         }
     )
+
+
+@app.get("/sales")
+def sales_redirect():
+    return RedirectResponse("/catalog/sales", status_code=302)
+
+
+@app.get("/arrivals")
+def arrivals_redirect():
+    return RedirectResponse("/catalog/arrivals", status_code=302)
 
 
 @app.get("/product/{pid}", response_class=HTMLResponse)
