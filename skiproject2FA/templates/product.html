@@ -1,0 +1,57 @@
+<!-- templates/product.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <div class="card rounded-4 overflow-hidden">
+            <img class="w-100" style="object-fit: cover; height: 420px;"
+                 src="{{ url_for('static', path=product.image) }}" alt="{{ product.name }}">
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <h1 class="fw-bold">{{ product.name }}</h1>
+        <div class="text-muted">{{ product.brand }} • {{ product.level }} • {{ product.style }}</div>
+
+        <div class="mt-3 d-flex gap-2">
+            {% if product.is_new %}<span class="badge text-bg-success">NEW</span>{% endif %}
+            {% if product.is_sale %}<span class="badge text-bg-danger">SALE</span>{% endif %}
+        </div>
+
+        <div class="display-6 fw-bold mt-3">${{ product.price }}</div>
+        <p class="mt-3">{{ product.desc }}</p>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-dark" href="{{ url_for('catalog', category=product.category) }}">← Назад в каталог</a>
+            <a class="btn btn-outline-secondary" href="/">На головну</a>
+            <a href="{{ url_for('add_to_cart', product_id=product.id) }}"
+               class="add-to-cart-btn">
+                В корзину
+            </a>
+
+
+        </div>
+    </div>
+</div>
+
+{% if related %}
+<h3 class="fw-bold mt-5 mb-3">Схожі товари</h3>
+<div class="row g-3">
+    {% for p in related %}
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card rounded-4 h-100">
+            <img class="card-img-top cover" src="{{ url_for('static', path=p.image) }}" alt="{{ p.name }}">
+            <div class="card-body">
+                <div class="fw-bold">{{ p.name }}</div>
+                <div class="text-muted small">${{ p.price }}</div>
+                <a class="btn btn-sm btn-outline-dark mt-2"
+                   href="{{ url_for('product_page', pid=p.id) }}">Детальніше</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

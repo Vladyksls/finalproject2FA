@@ -1,0 +1,143 @@
+<!-- templates/catalog.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex align-items-end justify-content-between gap-3 flex-wrap mb-3">
+    <div>
+        <h2 class="fw-bold mb-0 text-capitalize">{{ category }}</h2>
+        <div class="text-muted small">Знайдено: {{ count }}</div>
+    </div>
+
+    <form class="d-flex gap-2" method="get">
+        <input class="form-control" name="q" placeholder="Пошук по назві…" value="{{ selected.q }}">
+        <select class="form-select" name="sort">
+            <option value="default" {% if selected.sort==
+            'default' %}selected{% endif %}>Сортування</option>
+            <option value="price_asc" {% if selected.sort==
+            'price_asc' %}selected{% endif %}>Ціна ↑</option>
+            <option value="price_desc" {% if selected.sort==
+            'price_desc' %}selected{% endif %}>Ціна ↓</option>
+            <option value="name" {% if selected.sort==
+            'name' %}selected{% endif %}>Назва (A→Z)</option>
+        </select>
+        <button class="btn btn-dark">OK</button>
+    </form>
+</div>
+
+<div class="row g-3">
+    <!-- FILTERS -->
+    <div class="col-12 col-lg-3">
+        <div class="card rounded-4 p-3">
+            <form method="get">
+                <div class="fw-bold mb-2">Фільтри</div>
+
+                <label class="form-label small">Пошук</label>
+                <input class="form-control mb-3" name="q" value="{{ selected.q }}" placeholder="Напр. Burton">
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small">Min $</label>
+                        <input class="form-control" name="min_price" value="{{ selected.min_price }}">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Max $</label>
+                        <input class="form-control" name="max_price" value="{{ selected.max_price }}">
+                    </div>
+                </div>
+
+                <label class="form-label small">Brand</label>
+                <div class="mb-3">
+                    {% for b in filters.brands %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="brand" value="{{ b }}"
+                               {% if b in selected.brand %}checked{% endif %}>
+                        <label class="form-check-label">{{ b }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <label class="form-label small">Level</label>
+                <div class="mb-3">
+                    {% for l in filters.levels %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="level" value="{{ l }}"
+                               {% if l in selected.level %}checked{% endif %}>
+                        <label class="form-check-label">{{ l }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <label class="form-label small">Style</label>
+                <div class="mb-3">
+                    {% for s in filters.styles %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="style" value="{{ s }}"
+                               {% if s in selected.style %}checked{% endif %}>
+                        <label class="form-check-label">{{ s }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <label class="form-label small">Sort</label>
+                <select class="form-select mb-3" name="sort">
+                    <option value="default" {% if selected.sort==
+                    'default' %}selected{% endif %}>—</option>
+                    <option value="price_asc" {% if selected.sort==
+                    'price_asc' %}selected{% endif %}>Ціна ↑</option>
+                    <option value="price_desc" {% if selected.sort==
+                    'price_desc' %}selected{% endif %}>Ціна ↓</option>
+                    <option value="name" {% if selected.sort==
+                    'name' %} selected{% endif %}>Назва</option>
+                </select>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-dark w-100">Застосувати</button>
+                    <a class="btn btn-outline-secondary w-100" href="{{ request.path }}">Скинути</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- PRODUCTS GRID -->
+    <div class="col-12 col-lg-9">
+        <div class="row g-3">
+            {% for p in products %}
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="card rounded-4 h-100">
+                    <img src="{{ url_for('static', path=p.image) }}" alt="{{ p.name }}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div class="fw-bold">{{ p.name }}</div>
+                            <div class="d-flex gap-1">
+                                {% if p.is_new %}<span class="badge text-bg-success">NEW</span>{% endif %}
+                                {% if p.is_sale %}<span class="badge text-bg-danger">SALE</span>{% endif %}
+                            </div>
+                        </div>
+                        <div class="text-muted small">{{ p.brand }} • {{ p.level }} • {{ p.style }}</div>
+                        <div class="mt-2 fw-bold">${{ p.price }}</div>
+                        <a class="btn btn-sm btn-outline-dark mt-2" href="{{ url_for('product_page', pid=p.id) }}">
+                            Відкрити ➜
+                        </a>
+                        <a href="{{ url_for('add_to_cart', product_id=p.id) }}"
+                           class="add-to-cart-btn">
+                            В корзину
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if products|length == 0 %}
+            <div class="col-12">
+                <div class="alert alert-warning rounded-4">
+                    Нічого не знайдено 😅 Спробуй змінити фільтри.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

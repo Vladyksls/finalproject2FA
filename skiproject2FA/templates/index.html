@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkiShop - Магазин горнолыжного снаряжения</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #f9fafb;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #111827;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon-inner {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: black;
+        }
+
+        .delivery-info {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 1.5rem;
+
+        }
+
+        .icon-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            color: #111827;
+        }
+
+        .icon-btn span {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .prototype-label {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            text-align: right;
+        }
+
+        .prototype-label .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .prototype-label .subtitle {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+        }
+
+        /* Navigation */
+        nav {
+            background: #1f2937;
+        }
+
+        .nav-content {
+            display: flex;
+            gap: 0.25rem;
+            height: 48px;
+            align-items: center;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            white-space: nowrap;
+            font-size: 0.875rem;
+            text-decoration: none;
+        }
+
+        .nav-btn.active {
+            background: #111827;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: #374151;
+        }
+
+        /* Icons SVG */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        @media (min-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr 1fr; !important;
+            }
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: #d1d5db;
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            scroll-behavior: smooth;
+        }
+
+        .hero-btn {
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .hero-btn-primary {
+            background: white;
+            color: #111827;
+        }
+
+        .hero-btn-primary:hover {
+            background: #f9fafb;
+            transform: translateY(-2px);
+        }
+
+        .hero-btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .hero-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-image {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .hero-image img {
+            width: 100%;
+            height: 100%;        /* keeps proportions */
+            object-fit: cover;
+
+        }
+
+        .hero-product {
+            width: 150px; !important;
+            height: 300px; !important;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            border-radius: 1rem;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            transform: rotate(-5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+
+        }
+
+        .hero-product:nth-child(2) {
+            transform: rotate(5deg);
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+        }
+
+        /* Categories Section */
+        .categories {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .categories-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-card:hover img {
+            transform: scale(1.05);
+            transition: 0.3s ease;
+        }
+
+
+        .category-image {
+             width: 100%;
+            height: 160px;          /* 🔑 fixed height */
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .category-image img {
+             width: 100%;
+            height: 100%;
+            object-fit: cover;      /* 🔑 fills nicely */
+            display: block;
+        }
+
+
+
+        .category-placeholder {
+            width: 60%;
+            height: 70%;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transform: rotate(-10deg);
+        }
+
+        .category-info {
+            padding: 1.5rem;
+        }
+
+        .category-title {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .category-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Featured Products */
+        .featured-products {
+            margin-bottom: 4rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Product Card */
+        .product-card {
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-image img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ef4444;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .product-badge.new {
+            background: #10b981;
+        }
+
+        .placeholder-image {
+            width: 60%;
+            height: 80%;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .product-info {
+            padding: 1rem;
+        }
+
+        .product-brand {
+            color: #6b7280;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .product-specs {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .product-price {
+            font-weight: bold;
+            color: #111827;
+            font-size: 1.25rem;
+        }
+
+        .add-to-cart-btn {
+            padding: 0.5rem 1rem;
+            background: #111827;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #374151;
+        }
+
+        /* Promo Banner */
+        .promo-banner {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 4rem;
+            border-radius: 0.5rem;
+        }
+
+        .promo-content {
+            text-align: center;
+        }
+
+        .promo-content h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .promo-content p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+
+
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (min-width: 768px) {
+            .features {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            background: #111827;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-icon svg {
+            stroke: white;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 640px) {
+            .delivery-info {
+                display: none;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+        }
+        /* Footer */
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .footer-section h3 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 1rem;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        /* FORCE category image sizing */
+        .category-image {
+           height: 160px !important;
+            width: 100% !important;
+            overflow: hidden !important;
+            border-radius: 14px;
+        }
+
+        .category-image img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            display: block;
+        }
+
+        .category-image.logo img {
+            object-fit: contain;
+            padding: 20px;
+            margin-right: 40px;
+            align: center;
+        }
+
+
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <div class="container">
+        <div class="header-content">
+
+            <!-- Logo -->
+            <div class="logo">
+                <div class="logo-icon">
+                    <div class="logo-icon-inner"></div>
+                </div>
+                <a href="/" class="logo-text">SkiShop</a>
+            </div>
+
+            <!-- Navigation (from navbar functionality) -->
+
+
+            <!-- Delivery Info -->
+            <div class="delivery-info">
+                Доставка спортивного снаряжения 24/7
+            </div>
+
+            <!-- Icons -->
+            <div class="header-icons">
+
+                {% if request.session.get("user") %}
+                <a href="{{ url_for('logout') }}" class="icon-btn">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M10 17l5-5-5-5"/>
+                        <path d="M15 12H3"/>
+                        <path d="M21 3v18"/>
+                    </svg>
+                    <span>Выйти</span>
+                </a>
+
+                {% else %}
+
+                <a href="{{ url_for('login') }}" class="icon-btn">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>Войти</span>
+                </a>
+                {% endif %}
+
+
+                <a href="{{ url_for('cart') }}" class="icon-btn">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    <span>Корзина</span>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<nav>
+    <div class="container">
+        <div class="nav-content">
+
+            <!-- Catalog / Home -->
+            <a href="{{ url_for('home') }}"
+               class="nav-btn {% if request.endpoint == 'home' %}active{% endif %}">
+                Каталог
+            </a>
+
+            <!-- Categories -->
+            <a href="{{ url_for('catalog', category='snowboards') }}"
+               class="nav-btn {% if category == 'snowboards' %}active{% endif %}">
+                сноуборды
+            </a>
+
+            <a href="{{ url_for('catalog', category='skis') }}"
+               class="nav-btn {% if category == 'skis' %}active{% endif %}">
+                лыжи
+            </a>
+
+
+            <!-- Special pages -->
+            <a href="{{ url_for('catalog', category='sales') }}"
+               class="nav-btn {% if request.endpoint == 'sales' %}active{% endif %}">
+                скидки
+            </a>
+
+            <a href="{{ url_for('catalog', category='arrivals') }}"
+               class="nav-btn {% if request.endpoint == 'arrivals' %}active{% endif %}">
+                новинки
+            </a>
+
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Всё для зимнего спорта</h1>
+                <p>Сноуборды, лыжи и снаряжение от ведущих мировых брендов</p>
+                <div class="hero-buttons">
+                    <a href="#categories" class="hero-btn hero-btn-primary">Смотреть каталог</a>
+                    <a href="#featured" class="hero-btn hero-btn-secondary">Новинки сезона</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-product">
+                    <img src="/static/icons/id2.png" alt="Сноуборды">
+                </div>
+                <div class="hero-product">
+                    <img src="/static/icons/id3.png" alt="Сноуборды">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<div class="container">
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+            </div>
+            <h3 class="feature-title">Доставка по всей Европе</h3>
+            <p class="feature-description">Бесплатная доставка при заказе от 500$</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <h3 class="feature-title">Гарантия качества</h3>
+            <p class="feature-description">Официальная гарантия на все товары</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+            <h3 class="feature-title">Экспертная поддержка</h3>
+            <p class="feature-description">Профессиональная консультация по выбору</p>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <section class="categories" id="categories">
+        <div class="section-header">
+            <h2>Категории товаров</h2>
+            <p>Выберите категорию для просмотра всех товаров</p>
+        </div>
+        <div class="categories-grid">
+            <a href="{{ url_for('catalog', category='snowboards') }}" class="category-card">
+                <div class="category-image">
+                    <div>
+                        <img src="/static/icons/snowboard1.jpeg" alt="snowboards">
+                    </div>
+                </div>
+                <div class="category-info">
+                    <h3 class="category-title">Сноуборды</h3>
+                    <p class="category-description">Burton, Capita, GNU и другие</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('catalog', category='skis') }}" class="category-card">
+                <div class="category-image">
+                    <div>
+                        <img src="/static/icons/ski1.jpeg" alt="skis">
+                    </div>
+                </div>
+                <div class="category-info">
+                    <h3 class="category-title">Лыжи</h3>
+                    <p class="category-description">Rossignol, Atomic, Salomon</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('catalog', category='arrivals') }}" class="category-card">
+                <div class="category-image logo">
+                    <div>
+                         <img src="/static/icons/arrivals.png" alt="arrivals">
+                    </div>
+                </div>
+                <div class="category-info">
+                    <h3 class="category-title">Новинки</h3>
+                    <p class="category-description">Сезон 2026</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('catalog', category='sales') }}" class="category-card">
+                <div class="category-image logo">
+                    <div>
+                         <img src="/static/icons/sales.png" alt="sales">
+                    </div>
+                </div>
+                <div class="category-info">
+                    <h3 class="category-title">Скидки</h3>
+                    <p class="category-description">Зимние скидки</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-products" id="featured">
+        <div class="section-header">
+            <h2>Популярные товары</h2>
+            <p>Самые востребованные товары этого сезона</p>
+        </div>
+        <div class="products-grid">
+
+
+            {% for p in products %}
+            <div class="product-card">
+
+                <div class="product-image">
+
+                    {% if p.is_sale %}
+                    <div class="product-badge">SALE</div>
+                    {% elif p.is_new %}
+                    <div class="product-badge new">NEW</div>
+                    {% endif %}
+
+                    {% if p.image %}
+                    <a href="{{ url_for('product_page', pid=p.id) }}" class="product-link">
+                        <img src="{{ url_for('static', path=p.image) }}" alt="{{ p.name }}">
+                    </a>
+
+                    {% else %}
+                    <div class="placeholder-image">{{ p.brand|upper }}</div>
+                    {% endif %}
+
+                </div>
+
+                <div class="product-info">
+                    <div class="product-brand">{{ p.brand }}</div>
+                    <div class="product-name">{{ p.name }}</div>
+                    <div class="product-specs">
+                        {{ p.brand }} • {{ p.level }} • {{ p.style }}
+                    </div>
+
+                    <div class="product-footer">
+                        <div class="product-price">${{ p.price }}</div>
+
+                        <a href="{{ url_for('add_to_cart', product_id=p.id) }}"
+                           class="add-to-cart-btn">
+                            В корзину
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    <!-- Promo Banner -->
+    <section class="promo-banner">
+        <div class="promo-content">
+            <h2>Зимняя распродажа</h2>
+            <p>Скидки до 30% на выбранные модели</p>
+            <a href="{{ url_for('catalog', category='sales') }}" class="hero-btn hero-btn-primary">Смотреть скидки</a>
+        </div>
+    </section>
+</div>
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Покупателям</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.rei.com/learn/expert-advice/snowboard.html">Как выбрать сноуборд</a></li>
+                    <li><a href="https://www.evo.com/guides/how-to-choose-a-snowboard-and-size-chart">Таблица размеров</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Каталог</h3>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('catalog', category='snowboards') }}">Сноуборды</a></li>
+                    <li><a href="{{ url_for('catalog', category='skis') }}">Лыжи</a></li>
+                    <li><a href="{{ url_for('catalog', category='sales') }}">Скидки</a></li>
+                    <li><a href="{{ url_for('catalog', category='arrivals') }}">Новинки</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <ul class="footer-links">
+                    <li><a href="tel:+78001234567">8 (800) 123-45-67</a></li>
+                    <li><a href="mailto:info@skishop.ru">info-skishop@gmail.com</a></li>
+                    <li>Bústaðavegur 107, 108 Reykjavík, Исландия</li>
+                    <li>Пн-Вс: 10:00 - 22:00</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2026 SkiShop. Все права защищены.
+        </div>
+    </div>
+</footer>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</html>
